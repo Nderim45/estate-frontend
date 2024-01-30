@@ -14,11 +14,14 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutUser,
 } from "../redux/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const fileRef = useRef(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { currentUser, loading, error } = useSelector((state) => state.user);
 
   const [file, setFile] = useState(undefined);
@@ -74,7 +77,7 @@ const Profile = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify(formData),
         }
@@ -101,7 +104,7 @@ const Profile = () => {
         {
           method: "DELETE",
           headers: {
-            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       );
@@ -115,6 +118,11 @@ const Profile = () => {
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
+  };
+
+  const handleSignOut = () => {
+    dispatch(signOutUser());
+    localStorage.removeItem("access_token");
   };
 
   return (
@@ -182,7 +190,9 @@ const Profile = () => {
         >
           Delete Account
         </span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span className="text-red-700 cursor-pointer" onClick={handleSignOut}>
+          Sign Out
+        </span>
       </div>
       {error && <p className="text-red-700 mt-5">{error}</p>}
       {succesfullUpdate && (

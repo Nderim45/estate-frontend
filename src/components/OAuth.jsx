@@ -30,7 +30,9 @@ const OAuth = () => {
       );
 
       const data = await res.json();
-      dispatch(signInSuccess(data));
+      const { token, ...rest } = data;
+      localStorage.setItem("access_token", token);
+      dispatch(signInSuccess(rest));
       navigate("/");
     } catch (error) {
       console.log("Could not sign in with google", error);
