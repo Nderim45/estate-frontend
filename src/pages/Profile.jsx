@@ -11,6 +11,9 @@ import {
   updateUserStart,
   updateUserFailure,
   updateUserSuccess,
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
 } from "../redux/user/userSlice";
 
 const Profile = () => {
@@ -71,11 +74,9 @@ const Profile = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            ...formData,
-            token: localStorage.getItem("access_token"),
-          }),
+          body: JSON.stringify(formData),
         }
       );
       const data = await res.json();
@@ -87,6 +88,32 @@ const Profile = () => {
       setSuccesfullUpdate(true);
     } catch (error) {
       dispatch(updateUserFailure(error.message));
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/user/delete/${
+          currentUser._id
+        }`,
+        {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      localStorage.removeItem("access_token");
+      dispatch(deleteUserSuccess());
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
     }
   };
 
@@ -149,7 +176,12 @@ const Profile = () => {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
+        <span
+          className="text-red-700 cursor-pointer"
+          onClick={handleDeleteUser}
+        >
+          Delete Account
+        </span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
       {error && <p className="text-red-700 mt-5">{error}</p>}
