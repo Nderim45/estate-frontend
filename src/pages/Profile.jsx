@@ -29,6 +29,8 @@ const Profile = () => {
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [succesfullUpdate, setSuccesfullUpdate] = useState(false);
+  const [listingError, setListingError] = useState(false);
+  const [userListings, setUserListings] = useState([]);
 
   useEffect(() => {
     if (file) {
@@ -125,6 +127,30 @@ const Profile = () => {
     localStorage.removeItem("access_token");
   };
 
+  const handleShowListings = async () => {
+    try {
+      setListingError(false);
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/user/listings/${
+          currentUser._id
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (data.success === false) {
+        setListingError(true);
+        return;
+      }
+      setUserListings(data);
+    } catch (error) {
+      setListingError(true);
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -203,6 +229,49 @@ const Profile = () => {
       {error && <p className="text-red-700 mt-5">{error}</p>}
       {succesfullUpdate && (
         <p className="text-green-700 mt-5">Profile Updated</p>
+      )}
+      <button onClick={handleShowListings} className="text-green-700 w-full">
+        Show Listings
+      </button>
+      {listingError && <p className="text-red-700 mt-5">Error showing listings</p>}
+      {userListings && userListings.length > 0 && (
+        <div className="flex flex-col gap-4">
+          <h1 className="text-center mt-7 text-2xl font-semibold">
+            Your Listings
+          </h1>
+         { userListings.map((listing) => (
+          <div
+            key={listing._id}
+            className="border rounded-lg p-3 flex justify-between items-center gap-4"
+          >
+            <Link to={`/listing/${listing._id}`}>
+              <img
+                src={listing.imageURL[0]}
+                alt="listing cover"
+                className="h-16 w-16 object-contain"
+              />
+            </Link>
+            <Link
+              className="text-slate-700 font-semibold  hover:underline truncate flex-1"
+              to={`/listing/${listing._id}`}
+            >
+              <p>{listing.name}</p>
+            </Link>
+
+            <div className="flex flex-col item-center">
+              <button
+                onClick={() => handleListingDelete(listing._id)}
+                className="text-red-700 uppercase"
+              >
+                Delete
+              </button>
+              <Link to={`/update-listing/${listing._id}`}>
+                <button className="text-green-700 uppercase">Edit</button>
+              </Link>
+            </div>
+          </div>
+          ))}
+        </div>
       )}
     </div>
   );
