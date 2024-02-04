@@ -8,6 +8,7 @@ const Search = () => {
 
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
+  const [showMore, setShowMore] = useState(false);
   const [sidebarData, setSidebarData] = useState({
     searchTerm: "",
     type: "all",
@@ -47,6 +48,9 @@ const Search = () => {
         `${import.meta.env.VITE_APP_BACKEND_URL}/listing/?${searchQuery}`
       );
       const data = await res.json();
+      if (data.length > 11) {
+        setShowMore(true);
+      }
       setListings(data);
       setLoading(false);
     };
@@ -110,6 +114,21 @@ const Search = () => {
     urlParams.set("order", sidebarData.order);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
+  };
+
+  const handleShowMore = async () => {
+    const numberOfListing = listings.length;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("startIndex", numberOfListing);
+    const searchQuery = urlParams.toString();
+    const res = await fetch(
+      `${import.meta.env.VITE_APP_BACKEND_URL}/listing/?${searchQuery}`
+    );
+    const data = await res.json();
+    if (data.length < 12) {
+      setShowMore(false);
+    }
+    setListings((prev) => [...prev, ...data]);
   };
 
   return (
@@ -225,7 +244,20 @@ const Search = () => {
               Loading...
             </p>
           )}
-                  {!loading && listings && listings.map((listing) => <ListingCard key={listing._id} listing={listing} />)}
+          {!loading &&
+            listings &&
+            listings.map((listing) => (
+              <ListingCard key={listing._id} listing={listing} />
+            ))}
+
+          {showMore && (
+            <button
+              onClick={handleShowMore}
+              className="text-green-700 hover:underline p-7 text-center w-full"
+            >
+              Show More
+            </button>
+          )}
         </div>
       </div>
     </div>
