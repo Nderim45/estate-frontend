@@ -35,7 +35,9 @@ const UpdateListing = () => {
 
   useEffect(() => {
     const fetchListing = async () => {
-      const res = await fetch(`http://localhost:5000/api/listing/${id}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}listing/${id}`
+      );
       const data = await res.json();
       setFormData(data);
     };

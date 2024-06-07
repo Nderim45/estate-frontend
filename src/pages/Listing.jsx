@@ -30,7 +30,9 @@ const Listing = () => {
     const fetchListing = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:5000/api/listing/${id}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/listing/${id}`
+        );
         const data = await res.json();
         if (data.success === false) {
           setError(true);
