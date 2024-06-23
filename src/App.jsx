@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import SignIn from "./pages/Signin";
@@ -11,8 +11,14 @@ import CreateListing from "./pages/CreateListing";
 import UpdateListing from "./pages/UpdateListing";
 import Listing from "./pages/Listing";
 import Search from "./pages/Search";
+import Aos from "aos";
+import "aos/dist/aos.css";
 
 const App = () => {
+  useEffect(() => {
+    Aos.init({ duration: 1350 });
+  }, []);
+
   return (
     <BrowserRouter>
       <Header />
