@@ -38,12 +38,12 @@ You can visit website here:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/real-estate-platform.git
+    git clone https://github.com/Nderim45/estate-frontend.git
     ```
 
 2. Navigate to the project directory:
     ```bash
-    cd real-estate-platform
+    cd estate-frontend
     ```
 
 3. Install the dependencies:
